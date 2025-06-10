@@ -1,12 +1,18 @@
-const API_URL = 'https://whatchat-xbg2.onrender.com';
+const API_URL = import.meta.env.VITE_API_URL;
 
 export async function fetchContacts() {
+    const authToken = localStorage.getItem('auth_token');
+    if (!authToken) {
+        throw new Error('Token d\'authentification manquant');
+    }
+
     try {
         const response = await fetch(`${API_URL}/contacts`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
             }
         });
         
@@ -17,27 +23,34 @@ export async function fetchContacts() {
         return await response.json();
     } catch (error) {
         console.error('Erreur lors du chargement des contacts:', error);
-        return [];
+        throw error;
     }
 }
 
 export async function createContact(contactData) {
+    const authToken = localStorage.getItem('auth_token');
+    if (!authToken) {
+        throw new Error('Token d\'authentification manquant');
+    }
+
     try {
         const response = await fetch(`${API_URL}/contacts`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
             },
             body: JSON.stringify(contactData)
         });
 
         if (!response.ok) {
-            throw new Error('Erreur lors de la création du contact');
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Erreur lors de la création du contact');
         }
 
         return await response.json();
     } catch (error) {
         console.error('Erreur:', error);
-        return null;
+        throw error;
     }
 }

@@ -40,20 +40,38 @@ async function initializeApp() {
         // Vérifier l'authentification avant tout
         if (!checkAuth()) return;
 
+        const authToken = localStorage.getItem('auth_token');
+        if (!authToken) {
+            window.location.href = '/login.html';
+            return;
+        }
+
         // Précharger les images
         await preloadImages();
         
         // Initialiser l'interface principale uniquement si on est sur la page d'accueil
         if (window.location.pathname === '/') {
-            const contacts = await fetchContacts();
-            await displayContacts(contacts);
-            initializeSearch(contacts, displayContacts);
-            initializeFilters(contacts, displayContacts);
-            initializeContactModal(fetchContacts, displayContacts, createContact);
-            initializeLogout();
+            try {
+                const contacts = await fetchContacts();
+                if (contacts) {
+                    await displayContacts(contacts);
+                    initializeSearch(contacts, displayContacts);
+                    initializeFilters(contacts, displayContacts);
+                    initializeContactModal(fetchContacts, displayContacts, createContact);
+                    initializeLogout();
+                }
+            } catch (error) {
+                console.error('Erreur lors du chargement des contacts:', error);
+                // Afficher un message d'erreur à l'utilisateur
+                alert('Erreur lors du chargement des contacts. Veuillez réessayer.');
+            }
         }
     } catch (error) {
         console.error('Erreur lors de l\'initialisation:', error);
+        // Rediriger vers la page de connexion en cas d'erreur d'authentification
+        if (error.message.includes('authentification')) {
+            window.location.href = '/login.html';
+        }
     }
 }
 
