@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000';
+const API_URL = 'https://whatchat-xbg2.onrender.com';
 
 export async function sendOTP(phone) {
     try {
