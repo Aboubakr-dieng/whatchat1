@@ -12,13 +12,13 @@ function checkAuth() {
     const authToken = localStorage.getItem('auth_token');
     const currentPath = window.location.pathname;
     
-    if (!authToken && currentPath !== '/login.html') {
-        window.location.href = '/login.html';
+    if (!authToken && currentPath !== './login.html') {
+        window.location.href = './login.html';
         return false;
     }
     
-    if (authToken && currentPath === '/login.html') {
-        window.location.href = '/';
+    if (authToken && currentPath === './login.html') {
+        window.location.href = './';
         return false;
     }
     
